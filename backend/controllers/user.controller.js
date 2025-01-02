@@ -18,6 +18,9 @@ export const createUserController = async (req, res) => {
 
         const token = await user.generateJWT();
 
+        //So that password is not displayed in the frontend
+        delete user._doc.password;
+
         res.status(201).json({ user, token });
     }
     catch(error){
@@ -57,6 +60,9 @@ export const loginController = async (req, res) => {
         }
 
         const token = await user.generateJWT();
+
+        //So that password is not displayed in the frontend
+        delete user._doc.password;
 
         res.status(200).json({ user, token});
 
