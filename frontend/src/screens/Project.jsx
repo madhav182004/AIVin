@@ -34,6 +34,7 @@ const Project = () => {
 
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
+    const [fileTree, setfileTree] = useState({})
 
     const handleUserClick = (id) => {
         setSelectedUserId(prevSelectedUserId => {
@@ -182,6 +183,20 @@ const Project = () => {
                             )
                         })}
                     </div>
+                </div>
+            </section>
+
+            <section className='right bg-red-50 flex-grow h-full flex'>
+
+                <div className="explorer h-full max-w-64 min-w-52 py-2 bg-slate-200">
+                    <div className="file-tree">
+                        <div className="tree-element p-2 px-4 flex items-center gap-2 bg-slate-300 w-full">
+                            <p className='cursor-pointer font-semibold text-lg'>app.js</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="code-editor">
+
                 </div>
             </section>
 
