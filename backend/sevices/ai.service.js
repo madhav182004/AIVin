@@ -35,8 +35,8 @@ const model = genAI.getGenerativeModel({
                 })
                 "
             
+            },
         },
-    },
 
         "package.json": {
             file: {
@@ -56,7 +56,7 @@ const model = genAI.getGenerativeModel({
                     "dependencies": {
                         "express": "^4.21.2"
                     }
-}
+                }
 
                 
                 "

@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from '../config/axios.js';
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket.js';
 import { UserContext } from '../context/user.context.jsx';
 import Markdown from 'markdown-to-jsx';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
 
 function SyntaxHighlightedCode(props) {
     const ref = useRef(null)
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (ref.current && props.className?.includes('lang-') && window.hljs) {
             window.hljs.highlightElement(ref.current)
 
@@ -34,16 +36,7 @@ const Project = () => {
 
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [fileTree, setFileTree] = useState({
-        "app.js": {
-            content: `const express = require('express');`
-        },
-        "package.json": {
-            content: `{
-                        "name": "temp-server",
-                        }`
-        }
-    })
+    const [fileTree, setFileTree] = useState({})
     const [currentFile, setCurrentFile] = useState(null);
     const [openFiles, setOpenFiles] = useState([]);
 
@@ -109,12 +102,20 @@ const Project = () => {
 
         receiveMessage('project-message', data => {
 
+            // console.log(JSON.parse(data.message));
+            const message = JSON.parse(data.message)
+
+            if(message.fileTree)
+            {
+                setFileTree(message.fileTree)
+            }
+
             setMessages(prevMessages => [...prevMessages, data])
         })
 
         axios.get(`/projects/get-project/${location.state.project._id}`)
         .then(res => {
-            console.log(res.data.project);
+            // console.log(res.data.project);
             setProject(res.data.project);
         })
 
@@ -144,8 +145,7 @@ const Project = () => {
                     </button>
                 </header>
 
-                <div className="conversation-area pt-14 pb-10 flex-grow flex flex-col h-full relative">
-
+                <div className="conversation-area pb-10 flex-grow flex flex-col h-full relative">
                     <div
                         ref={messageBox}
                         className="message-box p-1 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide">
@@ -159,7 +159,6 @@ const Project = () => {
                                 </div>
                             </div>
                         ))}
-
                     </div>
 
                     <div className="inputField w-full flex absolute bottom-0">
@@ -221,32 +220,50 @@ const Project = () => {
                             {
                                 openFiles.map((file, index) => (
                                     <button
+                                        key={index}
                                         onClick={() => setCurrentFile(file)}
-                                        className={`open-file cursor-pointer p-2 flex items-center gap-2 w-fit bg-slate-300 ${currentFile === file ? 'bg-slate-400' : ''}`}
-                                    >
-                                        {file}
+                                        className={`open-file cursor-pointer p-2 px-4 flex items-center w-fit gap-2 bg-slate-300 ${currentFile === file ? 'bg-slate-400' : ''}`}>
+                                        <p
+                                            className='font-semibold text-lg'
+                                        >{file}</p>
                                     </button>
                                 ))
                             }
                         </div>
-                        <div className="bottom flex flex-grow">
-                            {
-                                fileTree[currentFile] && (
-                                    <textarea
-                                        value={fileTree[currentFile].content}
-                                        onChange={(e) => {
-                                            setFileTree({
-                                                ...fileTree,
-                                                [currentFile]: {
-                                                    content: e.target.value
+                        <div className="bottom flex flex-grow max-w-full shrink overflow-auto">
+                        {
+                            fileTree[ currentFile ] && (
+                                <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
+                                    <pre
+                                        className="hljs h-full">
+                                        <code
+                                            className="hljs h-full outline-none"
+                                            contentEditable
+                                            suppressContentEditableWarning
+                                            onBlur={(e) => {
+                                                const updatedContent = e.target.innerText;
+                                                const ft = {
+                                                    ...fileTree,
+                                                    [ currentFile ]: {
+                                                        file: {
+                                                            contents: updatedContent
+                                                        }
+                                                    }
                                                 }
-                                            })
-                                        }}
-                                        className='w-full h-full p-4 bg-slate-50'
-                                    >
-                                    </textarea>
-                                )
-                            }
+                                                setFileTree(ft)
+                                                saveFileTree(ft)
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: hljs.highlight(fileTree[currentFile].file.contents, { language: 'javascript' }).value }}
+                                            style={{
+                                                whiteSpace: 'pre-wrap',
+                                                paddingBottom: '25rem',
+                                                counterSet: 'line-numbering',
+                                            }}
+                                        />
+                                    </pre>
+                                </div>
+                            )
+                        }
                         </div>
                     </div>
                 )}
