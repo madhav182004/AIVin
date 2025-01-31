@@ -118,25 +118,36 @@ const Project = () => {
 
         receiveMessage('project-message', data => {
 
-            // console.log(JSON.parse(data.message));
-            const message = JSON.parse(data.message)
-
-            console.log(message)
+            console.log(data)
             
-            webContainer?.mount(message.fileTree)
+            if (data.sender._id == 'ai') {
 
-            if(message.fileTree)
-            {
-                setFileTree(message.fileTree)
+
+                const message = JSON.parse(data.message)
+
+                console.log(message)
+
+                webContainer?.mount(message.fileTree)
+
+                if (message.fileTree) {
+                    setFileTree(message.fileTree || {})
+                }
+                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
+            } else {
+
+
+                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
             }
-
-            setMessages(prevMessages => [...prevMessages, data])
         })
 
         axios.get(`/projects/get-project/${location.state.project._id}`)
         .then(res => {
             // console.log(res.data.project);
             setProject(res.data.project);
+            if(res.data.project.fileTree)
+            {
+                setFileTree(res.data.project.fileTree);
+            }
         })
 
         axios.get('/users/all')
@@ -150,6 +161,16 @@ const Project = () => {
         })
     }, [])
 
+    function saveFileTree(ft){
+        axios.put('/projects/update-file-tree', {
+            projectId: project._id,
+            fileTree: ft
+        }).then(res => {
+            console.log(res.data)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
 
     return (
         <main className='h-screen w-screen flex'>
