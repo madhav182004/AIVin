@@ -6,6 +6,7 @@ import { UserContext } from '../context/user.context.jsx';
 import Markdown from 'markdown-to-jsx';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
+import { getWebContainer } from '../config/webContainer.js';
 
 function SyntaxHighlightedCode(props) {
     const ref = useRef(null)
@@ -36,9 +37,13 @@ const Project = () => {
 
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [fileTree, setFileTree] = useState({})
+
+    const [fileTree, setFileTree] = useState({});
+
     const [currentFile, setCurrentFile] = useState(null);
     const [openFiles, setOpenFiles] = useState([]);
+
+    const [webContainer, setWebContainer] = useState(null);
 
     const handleUserClick = (id) => {
         setSelectedUserId(prevSelectedUserId => {
@@ -100,10 +105,22 @@ const Project = () => {
 
         initializeSocket(project._id);
 
+        if(!webContainer)
+        {
+            getWebContainer().then(container => {
+                setWebContainer(container);
+                console.log("container started");
+            })
+        }
+
         receiveMessage('project-message', data => {
 
             // console.log(JSON.parse(data.message));
             const message = JSON.parse(data.message)
+
+            console.log(message)
+            
+            webContainer?.mount(message.fileTree)
 
             if(message.fileTree)
             {
@@ -214,9 +231,11 @@ const Project = () => {
                         }
                     </div>
                 </div>
-                {currentFile && (
+
                     <div className="code-editor flex flex-col flex-grow h-full">
-                        <div className="top flex">
+                        <div className="top flex justify-between w-full">
+
+                            <div className="files flex">
                             {
                                 openFiles.map((file, index) => (
                                     <button
@@ -229,6 +248,35 @@ const Project = () => {
                                     </button>
                                 ))
                             }
+                            </div>
+
+                            <div className="actions flex gap-2">
+                                <button
+                                    onClick={async () => {
+
+                                        await webContainer?.mount(fileTree)
+
+                                        const installProcess = await webContainer.spawn("npm", [ "install" ])
+
+                                        installProcess.output.pipeTo(new WritableStream({
+                                            write(chunk){
+                                                console.log(chunk)
+                                            }
+                                        }))
+
+                                        const runProcess = await webContainer.spawn("npm", [ "start" ])
+
+                                        runProcess.output.pipeTo(new WritableStream({
+                                            write(chunk){
+                                                console.log(chunk)
+                                            }
+                                        }))
+                                    }}
+                                    className='p-2 px-4 bg-slate-300 text-white'
+                                >
+                                    run
+                                </button>
+                            </div>
                         </div>
                         <div className="bottom flex flex-grow max-w-full shrink overflow-auto">
                         {
@@ -266,7 +314,7 @@ const Project = () => {
                         }
                         </div>
                     </div>
-                )}
+
             </section>
 
             {isModalOpen && (
