@@ -1,8 +1,6 @@
 # **Backend API Documentation**  
 
----
-
-### **Endpoint: /users/register**  
+## Endpoint: `/users/register` 
 #### **Description**  
 Allows new users to register by providing their email and password.  
 
@@ -36,7 +34,7 @@ Allows new users to register by providing their email and password.
 
 ---
 
-### **Endpoint: /users/login**  
+## Endpoint: `/users/login` 
 #### **Description**  
 Allows users to log in by providing their email and password.  
 
@@ -70,7 +68,7 @@ Allows users to log in by providing their email and password.
 
 ---
 
-### **Endpoint: /users/profile**  
+## Endpoint: `/users/profile`  
 #### **Description**  
 Retrieves the profile of the currently authenticated user.  
 
@@ -82,7 +80,7 @@ Requires a valid JWT in the `Authorization` header.
 
 ---
 
-### **Endpoint: /projects/create**  
+## Endpoint: `/projects/create`  
 #### **Description**  
 Allows an authenticated user to create a new project.  
 
@@ -115,7 +113,7 @@ Requires a valid JWT in the `Authorization` header.
 
 ---
 
-### **Endpoint: /projects/all**  
+## Endpoint: `/projects/all` 
 #### **Description**  
 Retrieves all projects belonging to the authenticated user.  
 
@@ -145,7 +143,7 @@ Requires a valid JWT in the `Authorization` header.
 
 ---
 
-### **Endpoint: /projects/add-user**  
+## Endpoint: `/projects/add-user`
 #### **Description**  
 Allows an authenticated user to add other users to a specific project.  
 
@@ -182,7 +180,7 @@ Requires a valid JWT in the `Authorization` header.
 
 ---
 
-### **Endpoint: /projects/get-project/:projectId**  
+## Endpoint: `/projects/get-project/:projectId`
 #### **Description**  
 Retrieves details of a specific project by its ID.  
 
@@ -209,3 +207,82 @@ Requires a valid JWT in the `Authorization` header.
 ```  
 
 --- 
+
+## Endpoint: `/projects/update-file-tree`
+
+### Description
+Allows an authenticated user to update the file tree of a specific project.
+
+### HTTP Method
+**PUT**
+
+### Authentication
+Requires a valid JWT in the Authorization header.
+
+### Request Format
+| Field      | Type   | Required | Validation             | Description                        |
+|------------|--------|----------|------------------------|------------------------------------|
+| `projectId`| String | Yes      | Must be a valid string | ID of the project to update.       |
+| `fileTree` | Object | Yes      | Must be a valid object | The updated file tree structure.   |
+
+### Example Request
+```json
+{
+  "projectId": "64c1ef6b2f1b1c001f5a2e2f",
+  "fileTree": {
+    "root": {
+      "name": "src",
+      "type": "folder",
+      "children": [
+        {
+          "name": "index.js",
+          "type": "file"
+        }
+      ]
+    }
+  }
+}
+```
+
+### Example Response
+```json
+{
+  "project": {
+    "_id": "64c1ef6b2f1b1c001f5a2e2f",
+    "name": "Project Alpha",
+    "fileTree": {
+      "root": {
+        "name": "src",
+        "type": "folder",
+        "children": [
+          {
+            "name": "index.js",
+            "type": "file"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+---
+## Endpoint: `/ai/get-result`
+
+### Description
+Retrieves the result of an AI operation.
+
+### HTTP Method
+**GET**
+
+### Authentication
+Requires a valid JWT in the Authorization header.
+
+### Example Response
+```json
+{
+  "result": "<ai_generated_result>"
+}
+```
+
+---
