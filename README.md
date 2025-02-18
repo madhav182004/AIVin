@@ -1,7 +1,7 @@
 # AIVin
 
 ## 🚀 About the Project
-**AIVin** is a collaborative platform for project creation and development. It enables real-time chatting, AI-assisted coding using the **Gemini API**, and a built-in code editor with output screens. Users can edit, run, and collaborate on projects seamlessly in one place.
+**AIVin** is an innovative collaborative development platform that enables teams to create, edit, and manage projects seamlessly in one place. With **real-time chat**, **AI-assisted coding** via the Gemini API, an **integrated code editor**, and **live output screens**, AIVin enhances teamwork and efficiency. Whether you're working on a solo project or collaborating with a team, AIVin provides all the essential tools to streamline the development process.
 
 ## 🛠 Features
 - 💬 **Real-time Collaboration** - Chat with team members while working on projects
