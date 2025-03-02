@@ -15,6 +15,8 @@
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB
 - **AI Integration:** Gemini API
+- **Real-Time Communication:** Socket.io
+- **Browser-Based Execution:** WebContainer.io
 
 ## 📂 Folder Structure
 ```
@@ -90,3 +92,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 📩 Contact
 For any inquiries or suggestions, reach out to [your email] or connect via [LinkedIn/GitHub].
+
